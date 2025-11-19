@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Injetoras PRO - Banco Peças</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{background:linear-gradient(135deg,#1e3c72,#2a5298);color:#fff;min-height:100vh;padding-top:80px}
+    .navbar{background:rgba(0,0,0,0.9);border-bottom:4px solid #FFD700}
+    .nav-link{color:#fff!important;font-weight:600}
+    .nav-link:hover,.nav-link.active{background:#FFD700;color:#000!important}
+    .card{background:rgba(255,255,255,0.1);border-radius:20px}
+    .foto-peca{height:200px;object-fit:cover;border-radius:15px}
+  </style>
+</head>
+<body>
+  <nav class="navbar fixed-top navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand text-warning fs-3" href="dashboard.html">Injetoras PRO</a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="materias.html">Matéria-Prima</a>
+        <a class="nav-link" href="pecas.html">Peças</a>
+        <a class="nav-link" href="producao.html">Produção</a>
+        <a class="nav-link active" href="banco-pecas.html">Banco Peças</a>
+        <a class="nav-link" href="relatorio.html">Relatório</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h1 class="text-center mb-5 display-5">Banco de Dados - Peças Cadastradas</h1>
+    <div id="listaPecas" class="row g-4"></div>
+  </div>
+
+  <script>
+    if(!sessionStorage.getItem('logado')) location.href='index.html';
+    const pecas = JSON.parse(localStorage.getItem('pecas')||'[]');
+    const lista = document.getElementById('listaPecas');
+    pecas.forEach(p=>{
+      lista.innerHTML += `
+        <div class="col-md-4">
+          <div class="card text-white">
+            ${p.foto?`<img src="${p.foto}" class="foto-peca w-100">`:''}
+            <div class="p-3">
+              <h5>${p.nome}</h5>
+              <p>Código: ${p.codigo}<br>Cor: ${p.cor}<br>Pigmento: ${p.pigmento}<br>Material: ${p.material}</p>
+              <p>Produzidas: <strong>${p.produzidas||0} unid.</strong></p>
+            </div>
+          </div>
+        </div>`;
+    });
+  </script>
+</body>
+</html>
