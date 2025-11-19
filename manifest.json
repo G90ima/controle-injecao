@@ -1,0 +1,21 @@
+{
+  "name": "Injetoras PRO",
+  "short_name": "Injetoras",
+  "description": "Controle completo de injeção plástica",
+  "start_url": "/injetoras-gilmar/",
+  "display": "standalone",
+  "background_color": "#1e3c72",
+  "theme_color": "#2a5298",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/2a5298/ffffff?text=IP",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/2a5298/ffffff?text=IP",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
