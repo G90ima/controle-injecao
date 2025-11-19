@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Injetoras PRO - Banco Produção</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{background:linear-gradient(135deg,#1e3c72,#2a5298);color:#fff;min-height:100vh;padding-top:80px}
+    .navbar{background:rgba(0,0,0,0.9);border-bottom:4px solid #FFD700}
+    .nav-link{color:#fff!important;font-weight:600}
+    .nav-link:hover,.nav-link.active{background:#FFD700;color:#000!important}
+    .table{background:rgba(255,255,255,0.1);border-radius:15px}
+    .table th{background:#FFD700;color:#000}
+  </style>
+</head>
+<body>
+  <nav class="navbar fixed-top navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand text-warning fs-3" href="dashboard.html">Injetoras PRO</a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="materias.html">Matéria-Prima</a>
+        <a class="nav-link" href="pecas.html">Peças</a>
+        <a class="nav-link active" href="banco-producao.html">Banco Produção</a>
+        <a class="nav-link" href="relatorio.html">Relatório</a>
+      </div>
+    </div>
+  </nav>
 
+  <div class="container mt-5">
+    <h1 class="text-center mb-5 display-5">Histórico de Produção</h1>
+    <div class="table-responsive">
+      <table class="table table-dark table-hover">
+        <thead>
+          <tr>
+            <th>Data/Hora</th>
+            <th>Peça</th>
+            <th>Qtd</th>
+            <th>Operador</th>
+            <th>Material</th>
+            <th>Borra (kg)</th>
+            <th>Cor</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaProd"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    if(!sessionStorage.getItem('logado')) location.href='index.html';
+    const prod = JSON.parse(localStorage.getItem('producao')||'[]');
+    const tbody = document.getElementById('tabelaProd');
+    prod.reverse().forEach(p=>{
+      tbody.innerHTML += `<tr>
+        <td>${p.data}</td>
+        <td>${p.peca}</td>
+        <td>${p.qtd}</td>
+        <td>${p.operador||'-'}</td>
+        <td>${p.material}</td>
+        <td>${p.borra||0} kg</td>
+        <td>${p.cor}</td>
+      </tr>`;
+    });
+  </script>
+</body>
+</html>
