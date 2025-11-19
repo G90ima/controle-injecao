@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>QR Code App</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>body{background:#1e3c72;color:white;text-align:center;padding:50px}</style>
+</head>
+<body>
+  <h1>Escaneie para instalar o App</h1>
+  <div id="qrcode"></div>
+  <p>Use a câmera do celular</p>
+  <script>
+    new QRCode(document.getElementById("qrcode"), {
+      text: location.href.replace('qrcode.html',''),
+      width: 300, height: 300, colorDark: "#ffffff", colorLight: "#1e3c72"
+    });
+  </script>
+</body></html>
