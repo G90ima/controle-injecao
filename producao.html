@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produção</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-white">
+  <nav class="navbar fixed-top bg-black">
+    <div class="container-fluid">
+      <a class="navbar-brand text-danger fs-4" href="dashboard.html">Injetoras PRO</a>
+    </div>
+  </nav>
+
+  <div class="container mt-5 pt-4">
+    <h2 class="text-center mb-4">Registro de Produção</h2>
+    <div class="card bg-secondary p-4">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <select id="peca" class="form-select"></select>
+        </div>
+        <div class="col-md-2">
+          <input type="number" id="qtd" class="form-control" placeholder="Qtd" value="1">
+        </div>
+        <div class="col-md-2">
+          <input type="number" id="borra" class="form-control" placeholder="Borra (kg)" step="0.1">
+        </div>
+        <div class="col-md-3">
+          <input type="text" id="operador" class="form-control" placeholder="Operador">
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-success w-100" onclick="registrar()">Registrar</button>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="mt-5">Últimas Produções</h4>
+    <div id="ultimas" class="list-group"></div>
+  </div>
+
+  <script>
+    if(!sessionStorage.getItem('logado')) location.href='index.html';
+    function carregarPecas(){
+      const select = document.getElementById('peca');
+      const pecas = JSON.parse(localStorage.getItem('pecas')||'[]');
+      select.innerHTML = '<option>Selecione a peça</option>';
+      pecas.forEach(p=> {
+        const opt = document.createElement('option');
+        opt.value = p.codigo;
+        opt.textContent = `${p.codigo} - ${p.nome}`;
+        select.appendChild(opt);
+      });
+    }
+    function registrar(){
+      const codigo = document.getElementById('peca').value;
+      const qtd = parseInt(document.getElementById('qtd').value)||0;
+      const borra = parseFloat(document.getElementById('borra').value)||0;
+      const operador = document.getElementById('operador').value.trim();
+      if(!codigo || qtd<=0) return alert('Preencha peça e quantidade!');
+
+      const pecas = JSON.parse(localStorage.getItem('pecas')||'[]');
+      const peca = pecas.find(p=>p.codigo===codigo);
+      peca.produzidas = (peca.produzidas||0) + qtd;
+      localStorage.setItem('pecas',JSON.stringify(pecas));
+
+      // baixa matéria-prima (exemplo: 0.25kg por peça)
+      let mp = JSON.parse(localStorage.getItem('materias')||'[]');
+      if(mp.length>0){
+        mp[0].estoque -= qtd * 0.25; // ajuste conforme sua regra
+        if(mp[0].estoque<0) mp[0].estoque=0;
+        localStorage.setItem('materias',JSON.stringify(mp));
+      }
+
+      const data = new Date().toLocaleString('pt-BR');
+      let prod = JSON.parse(localStorage.getItem('producao')||'[]');
+      prod.push({data,peca:peca.nome,qtd,borra,operador,codigo});
+      localStorage.setItem('producao',JSON.stringify(prod));
+
+      alert('Produção registrada com sucesso!');
+      listarUltimas();
+    }
+    function listarUltimas(){
+      const lista = document.getElementById('ultimas');
+      const prod = JSON.parse(localStorage.getItem('producao')||'[]');
+      lista.innerHTML = '';
+      prod.slice(-10).reverse().forEach(p=>{
+        lista.innerHTML += `<div class="list-group-item bg-dark text-white">
+          <strong>${p.data}</strong> → ${p.peca} × ${p.qtd} unid (Borra: ${p.borra} kg)
+        </div>`;
+      });
+    }
+    carregarPecas(); listarUltimas();
+  </script>
+</body>
+</html>
