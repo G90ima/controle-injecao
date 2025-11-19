@@ -3,44 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Injetoras PRO - Relatório Completo</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <title>Relatório</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <style>
-    body{background:linear-gradient(135deg,#1e3c72,#2a5298);color:#fff;min-height:100vh;padding-top:80px}
-    .navbar{background:rgba(0,0,0,0.9);border-bottom:4px solid #FFD700}
-    .nav-link{color:#fff!important;font-weight:600}
-    .nav-link:hover,.nav-link.active{background:#FFD700;color:#000!important}
-    .card{background:rgba(255,255,255,0.95);border-radius:25px;padding:30px;box-shadow:0 15px 40px rgba(0,0,0,0.4)}
-    .btn-gigante{background:#FFD700;color:#000;font-weight:bold;padding:15px 40px;border-radius:50px;font-size:1.btn-gigante:hover{background:#FFC107;transform:scale(1.05)}
-  </style>
+  <style>body{background:#0d1b2a;color:#fff;padding-top:80px}</style>
 </head>
 <body>
-  <nav class="navbar fixed-top navbar-expand-lg">
+  <nav class="navbar fixed-top bg-black">
     <div class="container-fluid">
-      <a class="navbar-brand text-warning fs-3" href="dashboard.html">Injetoras PRO</a>
-      <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="dashboard.html">Dashboard</a>
-        <a class="nav-link" href="materias.html">Matéria-Prima</a>
-        <a class="nav-link" href="pecas.html">Peças</a>
-        <a class="nav-link" href="producao.html">Produção</a>
-        <a class="nav-link" href="banco-materias.html">Banco MP</a>
-        <a class="nav-link active" href="relatorio.html">Relatório</a>
-      </div>
+      <a class="navbar-brand text-danger fs-4" href="dashboard.html">Injetoras PRO</a>
     </div>
   </nav>
 
   <div class="container mt-5">
-    <h1 class="text-center mb-5 display-4">Relatório Completo - Injetoras PRO</h1>
-    <div class="relatorio" class="card text-dark">
-      <div class="p-5">
-        <h2 class="text-center text-primary mb-4">Relatório Gerado em ${new Date().toLocaleDateString('pt-BR')}</h2>
-        <div id="conteudoRelatorio"></div>
-        <div class="text-center mt-5">
-          <button class="btn btn-gigante me-3" onclick="gerarPDF()">Gerar PDF</button>
-          <button class="btn btn-success btn-gigante" onclick="enviarWhats()">Enviar por WhatsApp</button>
-        </div>
+    <h1 class="text-center mb-5">Relatório Completo</h1>
+    <div id="relatorio" class="card bg-white text-dark p-5">
+      <h2 class="text-center">Relatório Injetoras PRO</h2>
+      <h4>Data: ${new Date().toLocaleDateString('pt-BR')}</h4>
+      <div id="conteudo"></div>
+      <div class="text-center mt-4">
+        <button class="btn btn-danger btn-lg me-3" onclick="gerarPDF()">PDF</button>
+        <button class="btn btn-success btn-lg" onclick="enviarWhats()">WhatsApp</button>
       </div>
     </div>
   </div>
@@ -50,28 +33,24 @@
     const mp = JSON.parse(localStorage.getItem('materias')||'[]');
     const pecas = JSON.parse(localStorage.getItem('pecas')||'[]');
     const prod = JSON.parse(localStorage.getItem('producao')||'[]');
-    const caixa = JSON.parse(localStorage.getItem('caixaInjetoras')||'{"produzidas":0,"borra":0}');
 
-    let html = `<h3>Resumo Geral</h3>
-      <p><strong>Peças Produzidas:</strong> ${caixa.produzidas||0} unid.</p>
-      <p><strong>Borra Total:</strong> ${caixa.borra||0} kg</p>
-      <p><strong>Estoque Matéria-Prima:</strong> ${mp.reduce((a,b)=>a+b.estoque,0).toFixed(1)} kg</p>
-
-      <h3 class="mt-5">Matéria-Prima</h3>
-      <ul>${mp.map(m=>`<li>${m.nome} - ${m.estoque} kg</li>`).join('')}</ul>
-
-      <h3 class="mt-5">Produção do Mês</h3>
-      <ul>${prod.slice(-30).map(p=>`<li>${p.data} - ${p.peca} - ${p.qtd} unid - Borra: ${p.borra} kg</li>`).join('')}</ul>`;
-
-    document.getElementById('conteudoRelatorio').innerHTML = html;
+    let html = `<h3>Estoque Matéria-Prima</h3><ul>`;
+    mp.forEach(m=> html+=`<li>${m.nome}: ${m.estoque?.toFixed(1)||0} kg</li>`);
+    html += `</ul><h3>Peças Produzidas</h3><ul>`;
+    pecas.forEach(p=> html+=`<li>${p.codigo} - ${p.nome}: ${p.produzidas||0} unid.</li>`);
+    html += `</ul><h3>Últimas 20 Produções</h3><ol>`;
+    prod.slice(-20).reverse().forEach(p=> {
+      html += `<li>${p.data} → ${p.peca} × ${p.qtd} (Borra: ${p.borra} kg)</li>`;
+    });
+    html += `</ol>`;
+    document.getElementById('conteudo').innerHTML = html;
 
     function gerarPDF(){
-      const element = document.getElementById('conteudoRelatorio');
-      html2pdf().from(element).save('Relatorio_Injetoras_PRO.pdf');
+      html2pdf().from(document.getElementById('relatorio')).save('Relatorio_Injetoras.pdf');
     }
     function enviarWhats(){
-      const texto = encodeURIComponent("Relatório Injetoras PRO\n" + document.getElementById('conteudoRelatorio').innerText);
-      window.open(`https://wa.me/?text=${texto}`);
+      const texto = encodeURIComponent(document.getElementById('conteudo').innerText);
+      window.open(`https://wa.me/?text=*RELATÓRIO INJETORAS PRO*%0A%0A${texto}`);
     }
   </script>
 </body>
