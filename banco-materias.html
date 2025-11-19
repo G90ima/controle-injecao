@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Injetoras PRO - Banco Matéria-Prima</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{background:linear-gradient(135deg,#1e3c72,#2a5298);color:#fff;min-height:100vh;padding-top:80px;font-family:'Segoe UI',sans-serif}
+    .navbar{background:rgba(0,0,0,0.9);backdrop-filter:blur(10px);border-bottom:4px solid #FFD700}
+    .nav-link{color:#fff!important;font-weight:600;padding:12px 20px;border-radius:10px}
+    .nav-link:hover,.nav-link.active{background:#FFD700;color:#000!important}
+    .card{background:rgba(255,255,255,0.1);border-radius:20px;padding:20px;margin-bottom:20px}
+    .foto-mp{height:150px;object-fit:cover;border-radius:15px;border:3px solid #FFD700}
+    .estoque-baixo{background:#8B0000 !important;color:white}
+  </style>
+</head>
+<body>
+  <nav class="navbar fixed-top navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand text-warning fs-3" href="dashboard.html">Injetoras PRO</a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="materias.html">Matéria-Prima</a>
+        <a class="nav-link" href="pecas.html">Peças</a>
+        <a class="nav-link" href="producao.html">Produção</a>
+        <a class="nav-link active" href="banco-materias.html">Banco MP</a>
+        <a class="nav-link" href="relatorio.html">Relatório</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h1 class="text-center mb-5 display-5">Banco de Dados - Matéria-Prima</h1>
+    <div id="listaMP" class="row g-4"></div>
+  </div>
+
+  <script>
+    if(!sessionStorage.getItem('logado')) location.href='index.html';
+    const mp = JSON.parse(localStorage.getItem('materias')||'[]');
+    const lista = document.getElementById('listaMP');
+    let total = 0;
+    mp.forEach(m=>{
+      total += m.estoque;
+      lista.innerHTML += `
+        <div class="col-md-4">
+          <div class="card text-white ${m.estoque<10?'estoque-baixo':''}">
+          ${m.foto?`<img src="${m.foto}" class="foto-mp w-100">`:''}
+          <div class="p-3">
+            <h5>${m.nome} (${m.tipo})</h5>
+            <p>Estoque: <strong>${m.estoque.toFixed(1)} kg</strong></p>
+            <small>Entrada total: ${m.entrada||0} kg | Saída: ${m.saida||0} kg</small>
+          </div>
+        </div>
+      </div>`;
+    });
+    lista.insertAdjacentHTML('beforebegin', `<h3 class="text-center text-warning">Estoque Total: ${total.toFixed(1)} kg</h3>`);
+  </script>
+</body>
+</html>
